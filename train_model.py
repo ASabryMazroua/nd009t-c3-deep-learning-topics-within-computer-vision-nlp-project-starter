@@ -99,8 +99,8 @@ def create_data_loaders(data, batch_size):
     ''' 
     #Preparing the paths for each flder 
     train_path = os.path.join(data, 'train')
-    test_path = os.path.join(data, 'test')
     validation_path=os.path.join(data, 'valid')
+    test_path = os.path.join(data, 'test')
     
     #All pre-trained models expect input images normalized in the same way
     #So, we'll add a normalization step source: https://pytorch.org/vision/stable/models.html
@@ -188,7 +188,7 @@ if __name__=='__main__':
     
     parser.add_argument('--data_dir', type=str, default=os.environ['SM_CHANNEL_TRAINING'])
     
-    parser.add_argument('--model_-dir', type=str, default=os.environ['SM_MODEL_DIR'])
+    parser.add_argument('--model_dir', type=str, default=os.environ['SM_MODEL_DIR'])
     
     args = parser.parse_args()
 
