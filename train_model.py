@@ -96,8 +96,7 @@ def create_data_loaders(data, batch_size):
     '''
     This is an optional function that you may or may not need to implement
     depending on whether you need to use data loaders or not
-    '''
-    
+    ''' 
     #Preparing the paths for each flder 
     train_path = os.path.join(data, 'train')
     test_path = os.path.join(data, 'test')
