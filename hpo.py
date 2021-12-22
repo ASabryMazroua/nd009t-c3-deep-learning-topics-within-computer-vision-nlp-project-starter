@@ -18,7 +18,10 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 logger.addHandler(logging.StreamHandler(sys.stdout))
 
-def test(model, test_loader, criterion):
+from PIL import ImageFile
+ImageFile.LOAD_TRUNCATED_IMAGES = True
+
+def test(model, test_loader, criterion, device):
     '''
     TODO: Complete this function that can take a model and a 
           testing data loader and will get the test accuray/loss of the model
@@ -29,6 +32,8 @@ def test(model, test_loader, criterion):
     correct = 0
     with torch.no_grad():
         for data, target in test_loader:
+            data = data.to(device)
+            target = target.to(device)
             output = model(data)
             test_loss += criterion(output, target).item()  # sum up batch loss
             pred = output.argmax(dim=1, keepdim=True)  # get the index of the max log-probability
@@ -40,7 +45,7 @@ def test(model, test_loader, criterion):
         "\nTest set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)\n".format(
             test_loss, correct, len(test_loader.dataset), 100.0 * correct / len(test_loader.dataset)))
 
-def train(model, train_loader, validation_loader, criterion, optimizer):
+def train(model, train_loader, validation_loader, criterion, optimizer, device):
     '''
     TODO: Complete this function that can take a model and
           data loaders for training and will get train the model
@@ -51,6 +56,8 @@ def train(model, train_loader, validation_loader, criterion, optimizer):
     for epoch in range(1, epochs+1):
         model.train()
         for batch_idx, (data, target) in enumerate(train_loader, 1):
+            data = data.to(device)
+            target = target.to(device)
             optimizer.zero_grad()
             output = model(data)
             loss = criterion(output, target)
@@ -128,7 +135,12 @@ def main(args):
     '''
     TODO: Initialize a model by calling the net function
     '''
+    #Enabling the GPU to minimize the run time and cost
+    #Source: https://sagemaker-examples.readthedocs.io/en/latest/prep_data/image_data_guide/04c_pytorch_training.html
+    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    print(device)
     model=net()
+    model=model.to(device)
     
     '''
     TODO: Create your loss and optimizer
@@ -142,13 +154,13 @@ def main(args):
     '''
     train_loader, validation_loader, test_loader = create_data_loaders(args.data_dir, args.batchsize) #Creating data loaders
     logger.info("Training the model") #Adding infor to mark the training start
-    model = train(model, train_loader, validation_loader, loss_criterion, optimizer) #Training the model
+    model = train(model, train_loader, validation_loader, loss_criterion, optimizer, device) #Training the model
     
     '''
     TODO: Test the model to see its accuracy
     '''
     logger.info("Testing the model")
-    test(model, test_loader, loss_criterion)
+    test(model, test_loader, loss_criterion, device)
     
     '''
     TODO: Save the trained model
