@@ -80,7 +80,7 @@ def train(model, train_loader, validation_loader, criterion, optimizer, hook, de
                         loss.item(),
                     )
                 )
-        test(model, validation_loader, criterion, hook)
+        test(model, validation_loader, criterion, hook, device)
     return model
     
 def net():
@@ -162,7 +162,7 @@ def main(args):
     TODO: Call the train function to start training your model
     Remember that you will need to set up a way to get training data from S3
     '''
-    train_loader, validation_loader, test_loader = create_data_loaders(args.data_dir, args.batchsize) #Creating data loaders
+    train_loader, validation_loader, test_loader = create_data_loaders(args.data_dir, args.batch_size) #Creating data loaders
     logger.info("Training the model") #Adding infor to mark the training start
     model = train(model, train_loader, validation_loader, criterion, optimizer, hook, device) #Training the model
     
@@ -188,7 +188,7 @@ if __name__=='__main__':
     '''
     
     parser.add_argument(
-        "--batchsize",
+        "--batch_size",
         type=int,
         default=64,
         metavar="N",
